@@ -1,4 +1,4 @@
-package dev.joaov.desafiocadastro;
+package main.java.dev.joaov.desafiocadastro;
 
 public class Main {
     public static void main(String[] args) {
