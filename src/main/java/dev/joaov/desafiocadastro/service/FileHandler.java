@@ -1,9 +1,8 @@
 package main.java.dev.joaov.desafiocadastro.service;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import main.java.dev.joaov.desafiocadastro.model.Pet;
+
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,5 +22,18 @@ public class FileHandler {
         }
 
         return list;
+    }
+
+    public static String saveFile(File file, Pet pet) {
+        try (FileWriter fileWriter = new FileWriter(file, true);
+             BufferedWriter writer = new BufferedWriter(fileWriter)) {
+
+            writer.write(pet.toString());
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+        return "Arquivo %s salvo com sucesso.".formatted(file.getName());
     }
 }

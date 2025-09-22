@@ -33,16 +33,8 @@ public class Pet {
 
     @Override
     public String toString() {
-        return "Pet{" +
-                "name='" + name + '\'' +
-                ", surname='" + surname + '\'' +
-                ", petType=" + petType +
-                ", petSex=" + petSex +
-                ", address='" + address + '\'' +
-                ", age='" + age + '\'' +
-                ", weight='" + weight + '\'' +
-                ", breed='" + breed + '\'' +
-                '}';
+        return "1 - %s %s%n2 - %s%n3 - %s%n4 - %s%n5 - %s anos%n6 - %skg%n7 - %s"
+                .formatted(name, surname, petType, petSex, address, age, weight, breed);
     }
 
     public String getName() {

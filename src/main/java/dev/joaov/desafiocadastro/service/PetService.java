@@ -4,9 +4,15 @@ import main.java.dev.joaov.desafiocadastro.model.Pet;
 import main.java.dev.joaov.desafiocadastro.model.PetSex;
 import main.java.dev.joaov.desafiocadastro.model.PetType;
 
+import java.awt.image.Kernel;
 import java.io.File;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -89,16 +95,17 @@ public class PetService {
                 String age = scanner.nextLine();
                 Pattern pattern = Pattern.compile("[^0-9.,]");
                 Matcher matcher = pattern.matcher(age);
+                age = age.replace(",", ".");
 
                 if (matcher.find()) {
                     throw new IllegalArgumentException("Idade não pode ter letras ou caracteres especiais");
                 }
 
-                if (Byte.parseByte(age) > 20) {
+                if (Float.parseFloat(age) > 20 || Float.parseFloat(age) < 0) {
                     throw new IllegalArgumentException("Idade deve ser entre 0 e 20 anos");
                 }
 
-                pet.setAge(age.trim().isEmpty() ? EMPTY_INPUT : age.replace(",", "."));
+                pet.setAge(age.trim().isEmpty() ? EMPTY_INPUT : age);
             }
 
             if (i == 5) {
@@ -106,16 +113,17 @@ public class PetService {
                 String weight = scanner.nextLine();
                 Pattern pattern = Pattern.compile("[^0-9.,]");
                 Matcher matcher = pattern.matcher(weight);
+                weight = weight.replace(",", ".");
 
                 if (matcher.find()) {
                     throw new IllegalArgumentException("Peso não pode ter letras ou caracteres especiais");
                 }
 
-                if (Byte.parseByte(weight) > 60 || Byte.parseByte(weight) < 0.5) {
+                if (Byte.parseByte(weight) > 60 || Float.parseFloat(weight) < 0.5) {
                     throw new IllegalArgumentException("Peso deve ser entre 0.5 e 60");
                 }
 
-                pet.setWeight(weight.trim().isEmpty() ? EMPTY_INPUT : weight.replace(",", "."));
+                pet.setWeight(weight.trim().isEmpty() ? EMPTY_INPUT : weight);
             }
 
             if (i == 6) {
@@ -135,7 +143,11 @@ public class PetService {
             System.out.println();
         }
 
-        System.out.println(pet);
+        String localDate = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+        String localTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+        String petFullName = "%s%s".formatted(pet.getName(), pet.getSurname()).toUpperCase();
+        File petFile = new File("src/main/resources/%sT%s-%s.txt".formatted(localDate, localTime, petFullName));
+        FileHandler.saveFile(petFile, pet);
 
         return pet;
     }
