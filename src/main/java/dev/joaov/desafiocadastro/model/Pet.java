@@ -33,7 +33,7 @@ public class Pet {
 
     @Override
     public String toString() {
-        return "1 - %s %s%n2 - %s%n3 - %s%n4 - %s%n5 - %s anos%n6 - %skg%n7 - %s"
+        return "1 - %s %s%n2 - %s%n3 - %s%n4 - %s%n5 - %s%n6 - %s%n7 - %s"
                 .formatted(name, surname, petType, petSex, address, age, weight, breed);
     }
 

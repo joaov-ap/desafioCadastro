@@ -4,15 +4,12 @@ import main.java.dev.joaov.desafiocadastro.model.Pet;
 import main.java.dev.joaov.desafiocadastro.model.PetSex;
 import main.java.dev.joaov.desafiocadastro.model.PetType;
 
-import java.awt.image.Kernel;
 import java.io.File;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -65,65 +62,87 @@ public class PetService {
             if (i == 1) {
                 printEnums(PetType.values());
                 System.out.print("Digite sua escolha entre 1 e " + PetType.values().length + ": ");
-                int petInput = scanner.nextInt();
+                int petInput = scanner.nextInt() - 1;
                 scanner.nextLine();
+
+                while (petInput >= PetType.values().length || petInput < 0) {
+                    System.out.println();
+                    printEnums(PetType.values());
+                    System.out.print("Digite sua escolha entre 1 e " + PetType.values().length + ": ");
+                    petInput = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                }
+
                 pet.setPetType(PetType.values()[petInput]);
             }
 
             if (i == 2) {
                 printEnums(PetSex.values());
                 System.out.print("Digite sua escolha entre 1 e " + PetSex.values().length + ": ");
-                int petInput = scanner.nextInt();
+                int petInput = scanner.nextInt() - 1;
                 scanner.nextLine();
+
+                while (petInput >= PetSex.values().length || petInput < 0) {
+                    System.out.println();
+                    printEnums(PetSex.values());
+                    System.out.print("Digite sua escolha entre 1 e " + PetSex.values().length + ": ");
+                    petInput = scanner.nextInt() - 1;
+                    scanner.nextLine();
+                }
+
                 pet.setPetSex(PetSex.values()[petInput]);
             }
 
             if (i == 3) {
                 System.out.println("Endereco:");
                 System.out.print("  Digite o número da casa: ");
-                int houseNumber = scanner.nextInt();
-                scanner.nextLine();
+                String houseNumber = scanner.nextLine();
                 System.out.print("  Digite a cidade: ");
                 String city = scanner.nextLine();
                 System.out.print("  Digite a rua: ");
                 String street = scanner.nextLine();
-                pet.setAddress(street + ", " + (String.valueOf(houseNumber).trim().isEmpty() ? EMPTY_INPUT : houseNumber) + ", " + city);
+                pet.setAddress(street + ", " + (houseNumber.trim().isEmpty() ? EMPTY_INPUT : houseNumber) + ", " + city);
             }
 
             if (i == 4) {
                 System.out.print("Digite a idade aproximada do Pet: ");
                 String age = scanner.nextLine();
-                Pattern pattern = Pattern.compile("[^0-9.,]");
-                Matcher matcher = pattern.matcher(age);
-                age = age.replace(",", ".");
 
-                if (matcher.find()) {
-                    throw new IllegalArgumentException("Idade não pode ter letras ou caracteres especiais");
+                if (!age.trim().isEmpty()) {
+                    Pattern pattern = Pattern.compile("[^0-9.,]");
+                    Matcher matcher = pattern.matcher(age);
+                    age = age.replace(",", ".");
+
+                    if (matcher.find()) {
+                        throw new IllegalArgumentException("Idade não pode ter letras ou caracteres especiais");
+                    }
+
+                    if (Float.parseFloat(age) > 20 || Float.parseFloat(age) < 0) {
+                        throw new IllegalArgumentException("Idade deve ser entre 0 e 20 anos");
+                    }
                 }
 
-                if (Float.parseFloat(age) > 20 || Float.parseFloat(age) < 0) {
-                    throw new IllegalArgumentException("Idade deve ser entre 0 e 20 anos");
-                }
-
-                pet.setAge(age.trim().isEmpty() ? EMPTY_INPUT : age);
+                pet.setAge(age.trim().isEmpty() ? EMPTY_INPUT : "%s anos%n".formatted(age));
             }
 
             if (i == 5) {
                 System.out.print("Digite o peso aproximado do Pet: ");
                 String weight = scanner.nextLine();
-                Pattern pattern = Pattern.compile("[^0-9.,]");
-                Matcher matcher = pattern.matcher(weight);
                 weight = weight.replace(",", ".");
 
-                if (matcher.find()) {
-                    throw new IllegalArgumentException("Peso não pode ter letras ou caracteres especiais");
+                if (!weight.trim().isEmpty()) {
+                    Pattern pattern = Pattern.compile("[^0-9.,]");
+                    Matcher matcher = pattern.matcher(weight);
+                    if (matcher.find()) {
+                        throw new IllegalArgumentException("Peso não pode ter letras ou caracteres especiais");
+                    }
+
+                    if (Byte.parseByte(weight) > 60 || Float.parseFloat(weight) < 0.5) {
+                        throw new IllegalArgumentException("Peso deve ser entre 0.5 e 60");
+                    }
                 }
 
-                if (Byte.parseByte(weight) > 60 || Float.parseFloat(weight) < 0.5) {
-                    throw new IllegalArgumentException("Peso deve ser entre 0.5 e 60");
-                }
-
-                pet.setWeight(weight.trim().isEmpty() ? EMPTY_INPUT : weight);
+                pet.setWeight(weight.trim().isEmpty() ? EMPTY_INPUT : "%skg%n".formatted(weight));
             }
 
             if (i == 6) {

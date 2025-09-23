@@ -1,12 +1,16 @@
 package main.java.dev.joaov.desafiocadastro;
 
+import main.java.dev.joaov.desafiocadastro.model.Pet;
 import main.java.dev.joaov.desafiocadastro.service.PetService;
 
+import java.util.ArrayList;
 import java.util.InputMismatchException;
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
+        List<Pet> pets = new ArrayList<>();
         PetService petService = new PetService();
         int userInput;
 
@@ -17,7 +21,8 @@ public class Main {
 
             switch (userInput) {
                 case 1:
-                    petService.registerPet();
+                    Pet pet = petService.registerPet();
+                    pets.add(pet);
                     break;
                 case 2:
                     System.out.println("Alterando dados do pet...");
