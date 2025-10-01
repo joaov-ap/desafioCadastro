@@ -10,7 +10,6 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) {
-        List<Pet> pets = new ArrayList<>();
         PetService petService = new PetService();
         int userInput;
 
@@ -21,8 +20,7 @@ public class Main {
 
             switch (userInput) {
                 case 1:
-                    Pet pet = petService.registerPet();
-                    pets.add(pet);
+                    petService.registerPet();
                     break;
                 case 2:
                     System.out.println("Alterando dados do pet...");
@@ -34,7 +32,7 @@ public class Main {
                     System.out.println("Listando todos pets...");
                     break;
                 case 5:
-                    System.out.println("Listando pets por idade, nome, raça...");
+                    petService.filterPet();
                     break;
                 case 6:
                     System.out.println("Saindo...");

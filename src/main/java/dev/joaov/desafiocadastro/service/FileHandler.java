@@ -28,7 +28,7 @@ public class FileHandler {
         try (FileWriter fileWriter = new FileWriter(file, true);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
 
-            writer.write(pet.toString());
+            writer.write(pet.toStringFile());
             writer.flush();
         } catch (IOException e) {
             throw new RuntimeException(e);
