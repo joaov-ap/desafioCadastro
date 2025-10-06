@@ -5,7 +5,7 @@ import java.util.Objects;
 public class Pet {
     private String name;
     private PetType petType;
-    private PetSex petSex;
+    private PetGender petGender;
     private String address;
     private String age;
     private String weight;
@@ -14,10 +14,10 @@ public class Pet {
     public Pet() {
     }
 
-    public Pet(String name, PetType petType, PetSex petSex, String address, String age, String weight, String breed) {
+    public Pet(String name, PetType petType, PetGender petGender, String address, String age, String weight, String breed) {
         this.name = name;
         this.petType = petType;
-        this.petSex = petSex;
+        this.petGender = petGender;
         this.address = address;
         this.age = age;
         this.weight = weight;
@@ -26,18 +26,18 @@ public class Pet {
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, petType, petSex, address, age, weight, breed);
+        return Objects.hash(name, petType, petGender, address, age, weight, breed);
     }
 
     @Override
     public String toString() {
         return "%s - %s - %s - %s - %s - %s - %s"
-                .formatted(name, petType, petSex, address, age, weight, breed);
+                .formatted(name, petType, petGender, address, age, weight, breed);
     }
 
     public String toStringFile() {
         return "1 - %s%n2 - %s%n3 - %s%n4 - %s%n5 - %s%n6 - %s%n7 - %s"
-                .formatted(name, petType, petSex, address, age, weight, breed);
+                .formatted(name, petType, petGender, address, age, weight, breed);
     }
 
     public String getName() {
@@ -52,16 +52,8 @@ public class Pet {
         return petType;
     }
 
-    public void setPetType(PetType petType) {
-        this.petType = petType;
-    }
-
-    public PetSex getPetSex() {
-        return petSex;
-    }
-
-    public void setPetSex(PetSex petSex) {
-        this.petSex = petSex;
+    public PetGender getPetSex() {
+        return petGender;
     }
 
     public String getAddress() {

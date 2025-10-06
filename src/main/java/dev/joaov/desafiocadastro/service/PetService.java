@@ -1,7 +1,7 @@
 package main.java.dev.joaov.desafiocadastro.service;
 
 import main.java.dev.joaov.desafiocadastro.model.Pet;
-import main.java.dev.joaov.desafiocadastro.model.PetSex;
+import main.java.dev.joaov.desafiocadastro.model.PetGender;
 import main.java.dev.joaov.desafiocadastro.model.PetType;
 
 import java.io.File;
@@ -26,21 +26,7 @@ public class PetService {
             System.out.println(questions.get(i));
 
             if (i == 0) {
-                Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
-
-                System.out.print("Digite o nome: ");
-                String name = scanner.nextLine();
-
-                Matcher matcher = pattern.matcher(name);
-                if (name.trim().isEmpty() || name == null) {
-                    throw new IllegalArgumentException("Nome não deve ser vazio");
-                }
-
-                if (matcher.find()) {
-                    System.out.println("Nome não deve ter caracteres especiais");
-                    System.out.print("Digite o nome: ");
-                    name = scanner.nextLine();
-                }
+                String name = name();
                 pet.setName(name);
             }
 
@@ -51,7 +37,7 @@ public class PetService {
 
             if (i == 2) {
                 int petGender = petGenderSelector();
-                pet.setPetSex(PetSex.values()[petGender]);
+                pet.setPetSex(PetGender.values()[petGender]);
             }
 
             if (i == 3) {
@@ -75,16 +61,8 @@ public class PetService {
             }
 
             if (i == 6) {
-                Pattern pattern = Pattern.compile("[^a-zA-Z-]");
                 System.out.print("Digite a raça do Pet: ");
-                String breed = scanner.nextLine();
-                Matcher matcher = pattern.matcher(breed);
-
-                if (matcher.find()) {
-                    System.out.println("Raça não deve ter caracteres especiais");
-                    System.out.print("Digite a raça do Pet: ");
-                    breed = scanner.nextLine();
-                }
+                String breed = breed();
 
                 pet.setBreed(breed.trim().isEmpty() ? EMPTY_INPUT : breed);
             }
@@ -93,12 +71,17 @@ public class PetService {
 
         String localDate = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
         String localTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
-        File petFile = new File("src/main/resources/%sT%s-%s.txt".formatted(localDate, localTime, pet.getName().toUpperCase()));
+        File petFile = new File("petsCadastrados/%sT%s-%s.txt".formatted(localDate, localTime, pet.getName().toUpperCase()));
         FileHandler.saveFile(petFile, pet);
         pets.add(pet);
     }
 
     public void showAllPetsFiltered() {
+        if (filterPet().isEmpty()) {
+            System.out.println("Nenhum pet cadastrado.");
+            return;
+        }
+
         for (int i = 0; i < filterPet().size(); i++) {
             System.out.printf("%d. %s%n".formatted(i+1, filterPet().get(i)));
         }
@@ -113,22 +96,46 @@ public class PetService {
         pets.forEach(System.out::println);
     }
 
+    public void editPet() {
+        List<Pet> filteredPet = filterPet();
+
+    }
+
     private void printEnums(Object[] values) {
         for (int j = 0; j < values.length; j++) {
             System.out.println((j + 1) + " - " + values[j]);
         }
     }
 
+    private String name() {
+        System.out.print("Digite o nome ou sobrenome que deseja buscar: ");
+        String name = scanner.nextLine();
+
+        Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
+        Matcher matcher = pattern.matcher(name);
+        if (name.trim().isEmpty() || name == null) {
+            throw new IllegalArgumentException("Nome não deve ser vazio");
+        }
+
+        if (matcher.find()) {
+            System.out.println("Nome não deve ter caracteres especiais");
+            System.out.print("Digite o nome: ");
+            name = scanner.nextLine();
+        }
+
+        return name;
+    }
+
     private int petGenderSelector() {
-        printEnums(PetSex.values());
-        System.out.print("Digite sua escolha entre 1 e " + PetSex.values().length + ": ");
+        printEnums(PetGender.values());
+        System.out.print("Digite sua escolha entre 1 e " + PetGender.values().length + ": ");
         int petInput = scanner.nextInt() - 1;
         scanner.nextLine();
 
-        while (petInput >= PetSex.values().length || petInput < 0) {
+        while (petInput >= PetGender.values().length || petInput < 0) {
             System.out.println();
-            printEnums(PetSex.values());
-            System.out.print("Digite sua escolha entre 1 e " + PetSex.values().length + ": ");
+            printEnums(PetGender.values());
+            System.out.print("Digite sua escolha entre 1 e " + PetGender.values().length + ": ");
             petInput = scanner.nextInt() - 1;
             scanner.nextLine();
         }
@@ -197,6 +204,20 @@ public class PetService {
         return street + ", " + (houseNumber.trim().isEmpty() ? EMPTY_INPUT : houseNumber) + ", " + city;
     }
 
+    private String breed() {
+        Pattern pattern = Pattern.compile("[^a-zA-Z\s-]");
+        String breed = scanner.nextLine();
+        Matcher matcher = pattern.matcher(breed);
+
+        if (matcher.find()) {
+            System.out.println("Raça não deve ter caracteres especiais");
+            System.out.print("Digite a raça do Pet: ");
+            breed = scanner.nextLine();
+        }
+
+        return breed;
+    }
+
     private List<Pet> filterPet() {
         System.out.println("Escolha quais os criterios para busca: ");
         System.out.println("0 para finalizar a escolha de criterios.");
@@ -216,26 +237,13 @@ public class PetService {
                     System.out.printf("Criterios escolhidos: %s%n".formatted(criteriosList));
                     break;
                 case 1:
-                    System.out.print("Digite o nome ou sobrenome que deseja buscar: ");
-                    String name = scanner.nextLine();
-
-                    Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
-                    Matcher matcher = pattern.matcher(name);
-                    if (name.trim().isEmpty() || name == null) {
-                        throw new IllegalArgumentException("Nome não deve ser vazio");
-                    }
-
-                    if (matcher.find()) {
-                        System.out.println("Nome não deve ter caracteres especiais");
-                        System.out.print("Digite o nome: ");
-                        name = scanner.nextLine();
-                    }
+                    String name = name();
                     criteriosList.put("Nome ou sobrenome", name);
                     break;
                 case 2:
                     System.out.println("Digite o genero do Pet que deseja buscar: ");
                     int petGender = petGenderSelector();
-                    criteriosList.put("Genero", String.valueOf(PetSex.values()[petGender]));
+                    criteriosList.put("Genero", String.valueOf(PetGender.values()[petGender]));
                     break;
                 case 3:
                     System.out.print("Digite a idade do pet: ");
@@ -251,16 +259,7 @@ public class PetService {
                     break;
                 case 5:
                     System.out.print("Digite a raça do pet: ");
-                    String breed = scanner.nextLine();
-                    pattern = Pattern.compile("[^a-zA-Z\s-]");
-                    matcher = pattern.matcher(breed);
-
-                    if (matcher.find()) {
-                        System.out.println("Raça não deve ter caracteres especiais");
-                        System.out.print("Digite a raça do Pet: ");
-                        breed = scanner.nextLine();
-                    }
-
+                    String breed = breed();
                     criteriosList.put("Raça", breed);
                     break;
                 case 6:
