@@ -98,130 +98,19 @@ public class PetService {
         pets.add(pet);
     }
 
-    public void filterPet() {
-        System.out.println("Escolha quais os criterios para busca: ");
-        System.out.println("0 para finalizar a escolha de criterios.");
-        Map<String, String> criteriosList = new HashMap<>();
-        List<Pet> filteredPets = new ArrayList<>();
-        int userInput;
+    public void showAllPetsFiltered() {
+        for (int i = 0; i < filterPet().size(); i++) {
+            System.out.printf("%d. %s%n".formatted(i+1, filterPet().get(i)));
+        }
+    }
 
-        int petTypeIndex = petTypeSelector();
-        PetType petType = PetType.values()[petTypeIndex];
-
-        do {
-            filterMenu();
-            userInput = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (userInput) {
-                case 0:
-                    System.out.printf("Criterios escolhidos: %s%n".formatted(criteriosList));
-                    break;
-                case 1:
-                    System.out.print("Digite o nome ou sobrenome que deseja buscar: ");
-                    String name = scanner.nextLine();
-
-                    Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
-                    Matcher matcher = pattern.matcher(name);
-                    if (name.trim().isEmpty() || name == null) {
-                        throw new IllegalArgumentException("Nome não deve ser vazio");
-                    }
-
-                    if (matcher.find()) {
-                        System.out.println("Nome não deve ter caracteres especiais");
-                        System.out.print("Digite o nome: ");
-                        name = scanner.nextLine();
-                    }
-                    criteriosList.put("Nome ou sobrenome", name);
-                    break;
-                case 2:
-                    System.out.println("Digite o genero do Pet que deseja buscar: ");
-                    int petGender = petGenderSelector();
-                    criteriosList.put("Genero", String.valueOf(PetSex.values()[petGender]));
-                    break;
-                case 3:
-                    System.out.print("Digite a idade do pet: ");
-                    String age = scanner.nextLine();
-                    petAgeVerify(age);
-                    criteriosList.put("Idade", age);
-                    break;
-                case 4:
-                    System.out.print("Digite o peso do pet: ");
-                    String weight = scanner.nextLine();
-                    petWeightVerify(weight);
-                    criteriosList.put("Peso", weight);
-                    break;
-                case 5:
-                    System.out.print("Digite a raça do pet: ");
-                    String breed = scanner.nextLine();
-                    pattern = Pattern.compile("[^a-zA-Z\s-]");
-                    matcher = pattern.matcher(breed);
-
-                    if (matcher.find()) {
-                        System.out.println("Raça não deve ter caracteres especiais");
-                        System.out.print("Digite a raça do Pet: ");
-                        breed = scanner.nextLine();
-                    }
-
-                    criteriosList.put("Raça", breed);
-                    break;
-                case 6:
-                    String address = address();
-                    criteriosList.put("Endereço", address);
-                    break;
-            }
-        } while (userInput != 0);
-
-        String name = null;
-        String gender = null;
-        String age = null;
-        String weight = null;
-        String breed = null;
-        String address = null;
-
-        for (Map.Entry<String, String> entry : criteriosList.entrySet()) {
-            switch (entry.getKey()) {
-                case "Nome ou sobrenome":
-                    name = entry.getValue();
-                    break;
-                case "Genero":
-                    gender = entry.getValue();
-                    break;
-                case "Idade":
-                    age = entry.getValue();
-                    break;
-                case "Peso":
-                    weight = entry.getValue();
-                    break;
-                case "Raça":
-                    breed = entry.getValue();
-                    break;
-                case "Endereço":
-                    address = entry.getValue();
-                    break;
-            }
+    public void showAllPets() {
+        if (pets.isEmpty()) {
+            System.out.println("Nenhum pet cadastrado.");
+            return;
         }
 
-        String finalName = name;
-        String finalGender = gender;
-        String finalAge = age;
-        String finalWeight = weight;
-        String finalBreed = breed;
-        String finalAddress = address;
-
-        pets.stream()
-                .filter(p -> p.getPetType().equals(petType))
-                .filter(p -> finalName == null || p.getName().toUpperCase().contains(finalName.toUpperCase()))
-                .filter(p -> finalGender == null || p.getPetSex().name().toUpperCase().contains(finalGender.toUpperCase()) )
-                .filter(p -> finalAge == null || p.getAge().contains(finalAge))
-                .filter(p -> finalWeight == null || p.getWeight().contains(finalWeight))
-                .filter(p -> finalBreed == null || p.getBreed().toUpperCase().contains(finalBreed.toUpperCase()))
-                .filter(p -> finalAddress == null || p.getAddress().toUpperCase().contains(finalAddress.toUpperCase()))
-                .forEach(filteredPets::add);
-
-        for (int i = 0; i < filteredPets.size(); i++) {
-            System.out.printf("%d. %s%n".formatted(i+1, filteredPets.get(i)));
-        }
+        pets.forEach(System.out::println);
     }
 
     private void printEnums(Object[] values) {
@@ -306,6 +195,129 @@ public class PetService {
         String street = scanner.nextLine();
 
         return street + ", " + (houseNumber.trim().isEmpty() ? EMPTY_INPUT : houseNumber) + ", " + city;
+    }
+
+    private List<Pet> filterPet() {
+        System.out.println("Escolha quais os criterios para busca: ");
+        System.out.println("0 para finalizar a escolha de criterios.");
+        Map<String, String> criteriosList = new HashMap<>();
+        int userInput;
+
+        int petTypeIndex = petTypeSelector();
+        PetType petType = PetType.values()[petTypeIndex];
+
+        do {
+            filterMenu();
+            userInput = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (userInput) {
+                case 0:
+                    System.out.printf("Criterios escolhidos: %s%n".formatted(criteriosList));
+                    break;
+                case 1:
+                    System.out.print("Digite o nome ou sobrenome que deseja buscar: ");
+                    String name = scanner.nextLine();
+
+                    Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
+                    Matcher matcher = pattern.matcher(name);
+                    if (name.trim().isEmpty() || name == null) {
+                        throw new IllegalArgumentException("Nome não deve ser vazio");
+                    }
+
+                    if (matcher.find()) {
+                        System.out.println("Nome não deve ter caracteres especiais");
+                        System.out.print("Digite o nome: ");
+                        name = scanner.nextLine();
+                    }
+                    criteriosList.put("Nome ou sobrenome", name);
+                    break;
+                case 2:
+                    System.out.println("Digite o genero do Pet que deseja buscar: ");
+                    int petGender = petGenderSelector();
+                    criteriosList.put("Genero", String.valueOf(PetSex.values()[petGender]));
+                    break;
+                case 3:
+                    System.out.print("Digite a idade do pet: ");
+                    String age = scanner.nextLine();
+                    petAgeVerify(age);
+                    criteriosList.put("Idade", age);
+                    break;
+                case 4:
+                    System.out.print("Digite o peso do pet: ");
+                    String weight = scanner.nextLine();
+                    petWeightVerify(weight);
+                    criteriosList.put("Peso", weight);
+                    break;
+                case 5:
+                    System.out.print("Digite a raça do pet: ");
+                    String breed = scanner.nextLine();
+                    pattern = Pattern.compile("[^a-zA-Z\s-]");
+                    matcher = pattern.matcher(breed);
+
+                    if (matcher.find()) {
+                        System.out.println("Raça não deve ter caracteres especiais");
+                        System.out.print("Digite a raça do Pet: ");
+                        breed = scanner.nextLine();
+                    }
+
+                    criteriosList.put("Raça", breed);
+                    break;
+                case 6:
+                    String address = address();
+                    criteriosList.put("Endereço", address);
+                    break;
+                default:
+                    System.out.println("Opção inválida. Escolha entre 1 e 6.");
+            }
+        } while (userInput != 0);
+
+        String name = null;
+        String gender = null;
+        String age = null;
+        String weight = null;
+        String breed = null;
+        String address = null;
+
+        for (Map.Entry<String, String> entry : criteriosList.entrySet()) {
+            switch (entry.getKey()) {
+                case "Nome ou sobrenome":
+                    name = entry.getValue();
+                    break;
+                case "Genero":
+                    gender = entry.getValue();
+                    break;
+                case "Idade":
+                    age = entry.getValue();
+                    break;
+                case "Peso":
+                    weight = entry.getValue();
+                    break;
+                case "Raça":
+                    breed = entry.getValue();
+                    break;
+                case "Endereço":
+                    address = entry.getValue();
+                    break;
+            }
+        }
+
+        String finalName = name;
+        String finalGender = gender;
+        String finalAge = age;
+        String finalWeight = weight;
+        String finalBreed = breed;
+        String finalAddress = address;
+
+        return pets.stream()
+                .filter(p -> p.getPetType().equals(petType))
+                .filter(p -> finalName == null || p.getName().toUpperCase().contains(finalName.toUpperCase()))
+                .filter(p -> finalGender == null || p.getPetSex().name().toUpperCase().contains(finalGender.toUpperCase()))
+                .filter(p -> finalAge == null || p.getAge().contains(finalAge))
+                .filter(p -> finalWeight == null || p.getWeight().contains(finalWeight))
+                .filter(p -> finalBreed == null || p.getBreed().toUpperCase().contains(finalBreed.toUpperCase()))
+                .filter(p -> finalAddress == null || p.getAddress().toUpperCase().contains(finalAddress.toUpperCase()))
+                .toList();
     }
 
     private void filterMenu() {

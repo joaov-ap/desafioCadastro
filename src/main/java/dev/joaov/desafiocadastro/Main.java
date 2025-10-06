@@ -29,10 +29,10 @@ public class Main {
                     System.out.println("Deletando pet...");
                     break;
                 case 4:
-                    System.out.println("Listando todos pets...");
+                    petService.showAllPets();
                     break;
                 case 5:
-                    petService.filterPet();
+                    petService.showAllPetsFiltered();
                     break;
                 case 6:
                     System.out.println("Saindo...");
