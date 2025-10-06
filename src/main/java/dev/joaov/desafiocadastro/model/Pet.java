@@ -10,6 +10,7 @@ public class Pet {
     private String age;
     private String weight;
     private String breed;
+    private String fileName;
 
     public Pet() {
     }
@@ -52,9 +53,13 @@ public class Pet {
         return petType;
     }
 
-    public PetGender getPetSex() {
+    public void setPetType(PetType petType) {this.petType = petType;}
+
+    public PetGender getPetGender() {
         return petGender;
     }
+
+    public void setPetGender(PetGender petGender) {this.petGender = petGender;}
 
     public String getAddress() {
         return address;
@@ -86,5 +91,13 @@ public class Pet {
 
     public void setBreed(String breed) {
         this.breed = breed;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 }

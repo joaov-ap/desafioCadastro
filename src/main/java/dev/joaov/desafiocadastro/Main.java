@@ -23,10 +23,10 @@ public class Main {
                     petService.registerPet();
                     break;
                 case 2:
-                    System.out.println("Alterando dados do pet...");
+                    petService.editPet();
                     break;
                 case 3:
-                    System.out.println("Deletando pet...");
+                    petService.deletePet();
                     break;
                 case 4:
                     petService.showAllPets();

@@ -25,7 +25,7 @@ public class FileHandler {
     }
 
     public static String saveFile(File file, Pet pet) {
-        try (FileWriter fileWriter = new FileWriter(file, true);
+        try (FileWriter fileWriter = new FileWriter(file);
              BufferedWriter writer = new BufferedWriter(fileWriter)) {
 
             writer.write(pet.toStringFile());

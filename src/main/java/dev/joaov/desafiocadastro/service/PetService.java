@@ -37,7 +37,7 @@ public class PetService {
 
             if (i == 2) {
                 int petGender = petGenderSelector();
-                pet.setPetSex(PetGender.values()[petGender]);
+                pet.setPetGender(PetGender.values()[petGender]);
             }
 
             if (i == 3) {
@@ -69,21 +69,52 @@ public class PetService {
             System.out.println();
         }
 
-        String localDate = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
-        String localTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
-        File petFile = new File("petsCadastrados/%sT%s-%s.txt".formatted(localDate, localTime, pet.getName().toUpperCase()));
-        FileHandler.saveFile(petFile, pet);
-        pets.add(pet);
+        saveFile(pet);
     }
 
-    public void showAllPetsFiltered() {
-        if (filterPet().isEmpty()) {
+    public void deletePet() {
+        List<Pet> filteredPet = filterPet();
+
+        if (filteredPet.isEmpty()) {
             System.out.println("Nenhum pet cadastrado.");
             return;
         }
 
-        for (int i = 0; i < filterPet().size(); i++) {
-            System.out.printf("%d. %s%n".formatted(i+1, filterPet().get(i)));
+        for (int i = 0; i < filteredPet.size(); i++) {
+            System.out.printf("%d. %s%n".formatted(i+1, filteredPet.get(i)));
+        }
+
+        System.out.print("Escolha o pet que deseja deletar: ");
+        int input = scanner.nextInt();
+        scanner.nextLine();
+        Pet pet = filteredPet.get(input - 1);
+        System.out.println();
+
+        System.out.printf("O Pet %s sera excluido.%n".formatted(pet.getName()));
+        System.out.println("Para confirmar digite 'SIM' ou 'NÃO' para cancelar.");
+        String confirm = scanner.nextLine();
+        if (confirm.equalsIgnoreCase("SIM")) {
+            File petFile = new File("petsCadastrados/" + pet.getFileName());
+            petFile.delete();
+            pets.remove(pet);
+            System.out.printf("O Pet %s foi excluido com sucesso.%n".formatted(pet.getName()));
+            return;
+        }
+
+        if (confirm.equalsIgnoreCase("NÃO")) {
+            System.out.println("Cancelando operação");
+        }
+    }
+
+    public void showAllPetsFiltered() {
+        List<Pet> filteredPet = filterPet();
+        if (filteredPet.isEmpty()) {
+            System.out.println("Nenhum pet cadastrado.");
+            return;
+        }
+
+        for (int i = 0; i < filteredPet.size(); i++) {
+            System.out.printf("%d. %s%n".formatted(i+1, filteredPet.get(i)));
         }
     }
 
@@ -93,12 +124,71 @@ public class PetService {
             return;
         }
 
-        pets.forEach(System.out::println);
+        for (int i = 0; i < pets.size(); i++) {
+            System.out.printf("%d. %s%n".formatted(i+1, pets.get(i)));
+        }
     }
 
     public void editPet() {
         List<Pet> filteredPet = filterPet();
 
+        if (filteredPet.isEmpty()) {
+            System.out.println("Nenhum pet cadastrado.");
+            return;
+        }
+
+        for (int i = 0; i < filteredPet.size(); i++) {
+            System.out.printf("%d. %s%n".formatted(i+1, filteredPet.get(i)));
+        }
+
+        System.out.print("Escolha o pet que deseja editar: ");
+        int input = scanner.nextInt();
+        scanner.nextLine();
+        Pet pet = filteredPet.get(input - 1);
+        System.out.println();
+
+        int userInput;
+        do {
+            editMenu();
+            System.out.print("Escolha a opcão que deseja editar: ");
+            userInput = scanner.nextInt();
+            scanner.nextLine();
+
+            switch (userInput) {
+                case 0:
+                    System.out.println("Pet editado com sucesso.");
+                    break;
+                case 1:
+                    String name = name();
+                    pet.setName(name);
+                    break;
+                case 2:
+                    System.out.print("Digite a idade do pet: ");
+                    String age = scanner.nextLine();
+                    petAgeVerify(age);
+                    pet.setAge(age.trim().isEmpty() ? EMPTY_INPUT : "%s anos".formatted(age));
+                    break;
+                case 3:
+                    System.out.print("Digite o peso do pet: ");
+                    String weight = scanner.nextLine();
+                    petWeightVerify(weight);
+                    pet.setWeight(weight.trim().isEmpty() ? EMPTY_INPUT : "%skg".formatted(weight));
+                    break;
+                case 4:
+                    System.out.print("Digite a raça do pet: ");
+                    String breed = breed();
+                    pet.setBreed(breed);
+                    break;
+                case 5:
+                    String address = address();
+                    pet.setAddress(address);
+                    break;
+                default:
+                    System.out.println("Opção inválida. Escolha entre 1 e 5.");
+            }
+        } while (userInput != 0);
+
+        saveFile(pet);
     }
 
     private void printEnums(Object[] values) {
@@ -108,7 +198,6 @@ public class PetService {
     }
 
     private String name() {
-        System.out.print("Digite o nome ou sobrenome que deseja buscar: ");
         String name = scanner.nextLine();
 
         Pattern pattern = Pattern.compile("[^a-zA-Z\s]");
@@ -201,7 +290,7 @@ public class PetService {
         System.out.print("  Digite a rua: ");
         String street = scanner.nextLine();
 
-        return street + ", " + (houseNumber.trim().isEmpty() ? EMPTY_INPUT : houseNumber) + ", " + city;
+        return street + ", " + (houseNumber.trim().isEmpty() ? EMPTY_INPUT : houseNumber) + " - " + city;
     }
 
     private String breed() {
@@ -311,12 +400,38 @@ public class PetService {
         return pets.stream()
                 .filter(p -> p.getPetType().equals(petType))
                 .filter(p -> finalName == null || p.getName().toUpperCase().contains(finalName.toUpperCase()))
-                .filter(p -> finalGender == null || p.getPetSex().name().toUpperCase().contains(finalGender.toUpperCase()))
+                .filter(p -> finalGender == null || p.getPetGender().name().toUpperCase().contains(finalGender.toUpperCase()))
                 .filter(p -> finalAge == null || p.getAge().contains(finalAge))
                 .filter(p -> finalWeight == null || p.getWeight().contains(finalWeight))
                 .filter(p -> finalBreed == null || p.getBreed().toUpperCase().contains(finalBreed.toUpperCase()))
                 .filter(p -> finalAddress == null || p.getAddress().toUpperCase().contains(finalAddress.toUpperCase()))
                 .toList();
+    }
+
+    private void saveFile(Pet pet) {
+        if (!pets.contains(pet)) {
+            String localDate = LocalDate.now().format(DateTimeFormatter.BASIC_ISO_DATE);
+            String localTime = LocalTime.now().format(DateTimeFormatter.ofPattern("HHmm"));
+            File petFile = new File("petsCadastrados/%sT%s-%s.txt".formatted(localDate, localTime, pet.getName().replace(" ", "").toUpperCase()));
+            FileHandler.saveFile(petFile, pet);
+            pet.setFileName(petFile.getName());
+            pets.add(pet);
+            return;
+        }
+
+        File petFile = new File("petsCadastrados/%s".formatted(pet.getFileName()));
+        FileHandler.saveFile(petFile, pet);
+    }
+
+    private void editMenu() {
+        System.out.println("""
+                1 - Nome
+                2 - Idade
+                3 - Peso
+                4 - Raça
+                5 - Endereço
+                0 - Sair
+                """);
     }
 
     private void filterMenu() {
